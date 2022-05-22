@@ -21,7 +21,6 @@ class AsyncGame {
             this.failureHandler(data, method);
             return;
           }
-          console.log(method);
           return data.userId;
         } catch (error) {
           this.failureHandler(error, method);
@@ -102,7 +101,6 @@ class AsyncGame {
             this.failureHandler(data, method);
             return;
           }
-          console.log(method);
           return data;
         } catch (error) {
           this.failureHandler(error, method);
@@ -123,7 +121,6 @@ class AsyncGame {
             this.failureHandler(data, method);
             return;
           }
-          console.log(method);
           return data;
         } catch (error) {
           this.failureHandler(error, method);
@@ -133,40 +130,25 @@ class AsyncGame {
     async calculateUserScores() {
         // +1 points for questions you've answered correctly
         // -1 points for questions you've answered incorrectly
-
-        // This is the most "complicated" method - but you've got this ;)
-
-        // Guidelines for this part (ignore if you want an extra challenge!)
-        /*
-            - Get the users
-            - Get the submissions
-            - Create an `scores` object
-            - Loop through each user ID
-                - Extract the username
-                - Filter the correct submissions with matching user ID
-                - Filter the incorrect submissions with matching user ID
-                - Add a new entry to `scores` with the user's name and their score (correct.length - incorrect.length)
-
-            Example of `score` at the end of this:
-            {
-                Kayla: 12,
-                Darwin: -1
-            }
-        */
+        const method = 'calculateUserScores';
         const users = await this.getUsers();
-        for (const userId in users) {
-          console.log(userId, users[userId]);
-        }
         const answers = await this.getAnswerSubmissions();
-        for (const answerId in answers) {
-          console.log(answerId, answers[answerId]);
+        const scores = [];
+        try {
+          for (const userId in users) {
+            const username = users[userId].name;
+            const correctAnswers = answers.filter(answer => answer.userId == userId && answer.correct);
+            const incorrectAnswers = answers.filter(answer => answer.userId == userId && !answer.correct);
+            const score = correctAnswers.length - incorrectAnswers.length;
+            scores.push({'userId': userId, 'name': username, 'score': score});
+          }
+        } catch (error) {
+          this.failureHandler(error, method)
         }
-
-        // const scores =  {};
-        // users.forEach(user => {
-
-        // });
-
+        const sortedScores = scores.sort((a, b) => { return a.score > b.score ? -1 : 1 });
+        for (const i in sortedScores) {
+          console.log(`${sortedScores[i].name}(${sortedScores[i].userId}), score: ${sortedScores[i].score}`);
+        }
     }
 }
 
@@ -188,13 +170,7 @@ async function run() {
   game.calculateUserScores();
 };
 
-
 run();
-// game.calculateUserScores();
-
-
-//
-//
 
 // Remember the server is unexpected, it might return an error!
 
