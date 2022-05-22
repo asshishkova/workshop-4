@@ -1,103 +1,133 @@
 class AsyncGame {
     constructor() {
-        this.API_BASE = 'https://u-workshops.herokuapp.com'
+        this.API_BASE = 'https://u-workshops.herokuapp.com',
+        this.headers = { 'Accept': 'application/json', 'Content-Type': 'application/json'}
     }
-
-    /*
-        Note: most of these methods will use the `fetch` API
-        It's ok if you don't fully understand it yet! You can think of it as a 'blackbox' for now
-    */
+    failureHandler(error, method) {
+      console.log(`Request in ${method} failed: ${JSON.stringify(error)}`);
+    }
 
     async createUser(name) {
         // POST request to the /new_user endpoint
-        console.log('creating user');
-        const response_id = await fetch (this.API_BASE+"/new_user", {
-          method: "POST",
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json'},
-          body: JSON.stringify({name})
-        });
-        if (!response_id.ok) {
-          throw new Error(`Some error! status: ${response.status}`);
-        } else {
-          console.log(response_id);
+        const method = 'createUser'
+        try {
+          const response = await fetch (this.API_BASE+"/new_user", {
+            method: "POST",
+            headers: this.headers,
+            body: JSON.stringify({name})
+          });
+          const data = await response.json();
+          if (data.error) {
+            this.failureHandler(data, method);
+            return;
+          }
+          console.log(method);
+          return data.userId;
+        } catch (error) {
+          this.failureHandler(error, method);
         }
     }
 
     async addToQABank(ownerId, question, answer) {
         // POST request to /new_qa
-        console.log('creating user');
-        const response_id = await fetch (this.API_BASE+"/new_qa", {
-          method: "POST",
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json'},
-          body: JSON.stringify({ownerId, question, answer})
-        });
-        if (!response_id.ok) {
-          throw new Error(`Some error! status: ${response.status}`);
-        } else {
-          console.log(response_id);
+        const method = "addToQABank";
+        try {
+          const response = await fetch (this.API_BASE+"/new_qa", {
+            method: "POST",
+            headers: this.headers,
+            body: JSON.stringify({ownerId, question, answer})
+          });
+          const data = await response.json();
+          if (data.error) {
+            this.failureHandler(data, method);
+            return;
+          }
+          console.log(method, data);
+        } catch (error) {
+          this.failureHandler(error, method);
         }
     }
 
     async getAllQuestions() {
         // GET request to /all_questions
-        console.log('Getting questions');
-        const response = await fetch (this.API_BASE+"/all_questions", {
-          method: "GET",
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json'},
-        });
-        if (!response) {
-          throw new Error(`Some error: ${response.status}`);
+        const method = 'getAllQuestions';
+        try {
+          const response = await fetch (this.API_BASE+"/all_questions", {
+            method: "GET",
+            headers: this.headers
+          });
+          const data = await response.json();
+          if (data.error) {
+            this.failureHandler(data, method);
+            return;
+          }
+          console.log(method, data);
+        } catch (error) {
+          this.failureHandler(error, method);
         }
-        const data = await response.json();
-        console.log(data);
-        // Note! More questions will be added as other students progress in this workshop.
-        // Ask around to see who's added new questions!
     }
 
     async answerQuestion(qaId, answer, userId) {
-        console.log('Answering question');
-        const response = await fetch (this.API_BASE+"/answer_question", {
-          method: "POST",
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json'},
-          body: JSON.stringify({qaId, answer, userId})
-        });
-        if (!response) {
-          throw new Error(`Some error: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log(data);
         // POST request to /answer_question
+        const method = 'answerQuestion'
+        try {
+          const response = await fetch (this.API_BASE+"/answer_question", {
+            method: "POST",
+            headers: this.headers,
+            body: JSON.stringify({qaId, answer, userId})
+          });
+          const data = await response.json();
+          if (data.error) {
+            this.failureHandler(data, method);
+            return;
+          }
+          console.log(method, data);
+        } catch (error) {
+          this.failureHandler(error, method);
+        }
         // Note! In the response of this request you'll see whether your answer was correct or not.
         // If you answered incorrectly, try again or bring it up with the user who posted the question!
     }
 
     async getAnswerSubmissions() {
         // GET request to /answer_submissions
-        console.log('Getting answer submissions');
-        const response = await fetch (this.API_BASE+"/answer_submission", {
-          method: "GET",
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json'},
-        });
-        if (!response) {
-          throw new Error(`Some error: ${response.status}`);
+        const method = 'getAnswerSubmissions';
+        try {
+          const response = await fetch (this.API_BASE+"/answer_submission", {
+            method: "GET",
+            headers: this.headers,
+          });
+          const data = await response.json();
+          if (data.error) {
+            this.failureHandler(data, method);
+            return;
+          }
+          console.log(method);
+          return data;
+        } catch (error) {
+          this.failureHandler(error, method);
         }
-        const data = await response.json();
-        return data;
     }
 
     async getUsers(){
         // GET request to /the_users
-        console.log('Getting users');
-        const response = await fetch (this.API_BASE+"/the_users", {
-          method: "GET",
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json'},
-        });
-        if (!response) {
-          throw new Error(`Some error: ${response.status}`);
+        const method = 'getUsers';
+        try {
+          const response = await fetch (this.API_BASE+"/the_users", {
+            method: "GET",
+            headers: this.headers,
+          });
+          const data = await response.json();
+          // console.log(data);
+          if (data.error) {
+            this.failureHandler(data, method);
+            return;
+          }
+          console.log(method);
+          return data;
+        } catch (error) {
+          this.failureHandler(error, method);
         }
-        const data = await response.json();
-        console.log(data);
-        return data;
     }
 
     async calculateUserScores() {
@@ -124,9 +154,14 @@ class AsyncGame {
             }
         */
         const users = await this.getUsers();
-        console.log(users);
+        for (const userId in users) {
+          console.log(userId, users[userId]);
+        }
         const answers = await this.getAnswerSubmissions();
-        console.log(answers);
+        for (const answerId in answers) {
+          console.log(answerId, answers[answerId]);
+        }
+
         // const scores =  {};
         // users.forEach(user => {
 
@@ -136,13 +171,30 @@ class AsyncGame {
 }
 
 const game = new AsyncGame();
-// game.createUser('Anna');
-// game.getUsers();
-// game.addToQABank(5, "What is the capital of GB?", 'London');
-// game.getAllQuestions();
-// game.answerQuestion(1, 100, 23);
-// game.getAnswerSubmissions();
-game.calculateUserScores();
+async function run() {
+  const username = "Anna";
+  const addQuestion = "What is the capital of GB?";
+  const addAnswer = "London";
+  const answerQuestionId = 1;
+  const giveAnswer = 100;
+
+  const userId = await game.createUser(username);
+  console.log(userId);
+  game.addToQABank(userId, addQuestion, addAnswer);
+  game.answerQuestion(answerQuestionId, giveAnswer, userId);
+
+  game.getAllQuestions();
+  game.getAnswerSubmissions();
+  game.calculateUserScores();
+};
+
+
+run();
+// game.calculateUserScores();
+
+
+//
+//
 
 // Remember the server is unexpected, it might return an error!
 
